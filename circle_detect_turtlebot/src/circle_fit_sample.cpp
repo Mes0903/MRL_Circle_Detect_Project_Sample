@@ -57,7 +57,27 @@ struct s_r {
 //##################################
 struct s_r circle_fit(MatrixXd &data)
 {
-    // coding by yourself
+    MatrixXd A(data.rows(), data.cols() + 1);
+    MatrixXd b(data.rows(), 1);
+    b << (-1 * data.array().square().matrix()) * MatrixXd::Ones(data.cols(), 1);
+    A << -2 * data, MatrixXd::Ones(data.rows(), 1);
+    MatrixXd solution = A.bdcSvd(ComputeThinU | ComputeThinV).solve(b);
+
+    MatrixXd center(1, data.cols());
+    for (int i = 0; i < data.cols(); i++) {
+        center(0, i) = solution(i, 0);
+    }
+
+    float r = solution(data.cols(), 0), s = 0;
+    r = sqrt(pow(center.norm(), 2) - r);
+    for (int i = 0; i < data.rows(); i++) {
+        s = s + pow((data.row(i) - center).norm() - r, 2);
+    }
+    s = sqrt(s);
+    struct s_r Returndata;
+    Returndata.s = s;
+    Returndata.r = r;
+    return Returndata;
 }
 //##################################
 int main()
