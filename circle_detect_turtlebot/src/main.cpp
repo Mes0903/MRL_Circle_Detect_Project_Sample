@@ -84,7 +84,7 @@ struct s_r {
 //##################################
 struct s_r circle_fit(MatrixXd &data)
 {
-    MatrixXd A(data.rows(), data.cols() + 1);
+    MatrixXd A(data.rows(), data.cols() + 1);    // 
     MatrixXd b(data.rows(), 1);
     b << (-1 * data.array().square().matrix()) * MatrixXd::Ones(data.cols(), 1);
     A << -2 * data, MatrixXd::Ones(data.rows(), 1);
@@ -150,16 +150,18 @@ void scanCallback(const sensor_msgs::LaserScan::ConstPtr &scan)
     float xy[360][2];
     printf("[YDLIDAR INFO]: angle_range : [%f, %f]\n", RAD2DEG(scan->angle_min), RAD2DEG(scan->angle_max));
     printf("[YDLIDAR INFO]: angle_increment : [%f] degree\n", RAD2DEG(scan->angle_increment));
+    // 把距離資料轉換成 x,y 資料
     for (int i = 0; i < 360; i++) {
         xy[i][0] = scan->ranges[i] * cos(scan->angle_min + scan->angle_increment * i);
         xy[i][1] = scan->ranges[i] * sin(scan->angle_min + scan->angle_increment * i);
     }
+    // 切分段
     std::vector<MatrixXd> Seg_data = Segment(xy, 360);
     for (int i = 0; i < Seg_data.size(); i++) {
         std::cout << i + 1 << "-th segment\n"
                   << Seg_data[i] << '\n';
         if (Seg_data[i].rows() >= 3) {
-            struct s_r s_and_r = circle_fit(Seg_data[i]);
+            struct s_r s_and_r = circle_fit(Seg_data[i]);    // 計算每個分段的徵圓度與半徑
             std::cout << "s :" << s_and_r.s << " , r :" << s_and_r.r << "\n\n";
             if (s_and_r.s < 0.06 && s_and_r.r < 0.15 && Seg_data[i].rows() >= 3) { // choice the parameter by yourself s:circularity , r:radius , number of point in this segment
                 marker.pose.position.x = Seg_data[i].col(0).mean();
