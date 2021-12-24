@@ -23,7 +23,9 @@ std::vector<MatrixXd> Segment(float origin_data[][2], int size)
     std::vector<MatrixXd> Returndata;
 
     for (int i = 0; i < size; i++) {
-        if (((origin_data[i][0]!=0) || (origin_data[i][1]!=0)) && (std::isnormal(origin_data[i][0]) && std::isnormal(origin_data[i][1]))){data.push_back({origin_data[i][0], origin_data[i][1]});}
+        if (((origin_data[i][0] != 0) || (origin_data[i][1] != 0)) && (std::isnormal(origin_data[i][0]) && std::isnormal(origin_data[i][1]))) {
+            data.push_back({ origin_data[i][0], origin_data[i][1] });
+        }
     }
     float threshold = 0.4;
     int validsize = data.size(), ReturnEndIDX = 0;
